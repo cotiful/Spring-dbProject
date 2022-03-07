@@ -19,18 +19,17 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import site.metacoding.dbproject.domain.user.User;
 
-@Data
-@NoArgsConstructor
 @AllArgsConstructor
-@EntityListeners(AuditingEntityListener.class) // 시간 알아서 해줌
+@NoArgsConstructor
+@Data
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 public class Post {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id; // primary key
+    private Integer id;
 
     @Column(length = 300, nullable = false)
     private String title;
@@ -44,9 +43,7 @@ public class Post {
     private User user;
 
     @CreatedDate // insert
-    // 회원가입한 날짜
-    private LocalDateTime creatDate;
-    @LastModifiedDate // insert,update
-    // 업데이트된 날짜
+    private LocalDateTime createDate;
+    @LastModifiedDate // insert, update
     private LocalDateTime updateDate;
 }

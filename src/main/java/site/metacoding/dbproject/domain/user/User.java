@@ -15,21 +15,22 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.ToString;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
-//JPA 라이브러리는 JAVA(자바언어로) Persistence(DB에 영구적인 저장) API(노출되어 있는 메서드)
-//1.CRUD 메서드를 기본제공
-//2.자바코드로 DB를 자동생성 기능제공
-//3.ORM제공!! 
+// JPA 라이브러리는 Java(자바언어) Persistence(DB에 영구적인 저장) API(노출되어 있는 메서드)
+// 1. CRUD 메서드를 기본 제공
+// 2. 자바코드로 DB를 자동 생성 기능 제공 - 이거해보자!! - 설정!!
+// 3. ORM 제공!! - 이 부분 지금 몰라도 됨. - 이거해보자!! (Object Relation Mapping)
+
 @AllArgsConstructor
 @NoArgsConstructor
-@Data // Getter, Setter, ToSTring
-@Entity // 서버 실행시 해당 클래스로 테이블을 생성해
-@EntityListeners(AuditingEntityListener.class) // 시간 알아서 해줌
+@Data // Getter, Setter, ToString
+@Entity // 서버 실행시 해당 클래스로 테이블을 생성해!!
+@EntityListeners(AuditingEntityListener.class) // 현재시간 입력을 위해 필요한 어노테이션
 public class User {
-    // IDENTITY 전략은 DB에게 번호증가 전략을 위임하는 것!! - 알아서 디비에 맞게 찾아줌.
+    // IDENTITY 전략은 DB에게 번호증가 전략을 위임하는 것!! - 알아서 디비에 맞게 찾아줌
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id; // primary key
@@ -38,13 +39,12 @@ public class User {
     private String username; // ssar 아이디
     @Column(length = 12, nullable = false)
     private String password;
-    @Column(length = 1600000)
+
+    @Column(length = 16000000)
     private String email;
 
     @CreatedDate // insert
-    // 회원가입한 날짜
-    private LocalDateTime creatDate;
-    @LastModifiedDate // insert,update
-    // 업데이트된 날짜
+    private LocalDateTime createDate;
+    @LastModifiedDate // insert, update
     private LocalDateTime updateDate;
 }
