@@ -35,34 +35,25 @@ public class UserController {
         return "user/joinForm";
     }
 
+    // username=ssar&password=&email=ssar@nate.com 패스워드 공백
+    // username=ssar&email=ssar@nate.com 패스워드 null
     // username=ssar&password=1234&email=ssar@nate.com (x-www-form)
     // 회원가입 - 로그인X
     @PostMapping("/join")
-    public @ResponseBody String join(User user) {
+    public String join(User user) {
 
-        // StringBuffer sb = new StringBuffer();
-        // sb.append("<script>");
-        // sb.append("alert('값을 제대로 전달받지 못했습니다.');");
-        // // sb.append("location.href='/joinForm';"); ->똑같이 새로고침 하는거다. history.back을
-        // 사용하자
-        // sb.append("history.back();");
-        // sb.append("</script>");
-
-        // 1.username, password, email null 체크 2.공백체크
-        // 2. try_catch 혹은 if로 오류를 잡는 방법이 있다.
+        // 1. username, password, email 1.null체크, 2.공백체크
         if (user.getUsername() == null || user.getPassword() == null || user.getEmail() == null) {
-            // return sb.toString();
-            return "redircet:/joinForm"; // 잘못적으면 새로고치돼서 다 사라지니깐 너무 화가남 뒤로가기를 만들어줘야 함
+            return "redirect:/joinForm";
         }
         if (user.getUsername().equals("") || user.getPassword().equals("") || user.getEmail().equals("")) {
-
-            return "redircet:/joinForm";
+            return "redirect:/joinForm";
         }
-        System.out.println("user : " + user);
 
         // 2. 핵심로직
         User userEntity = userRepository.save(user);
         System.out.println("userEntity : " + userEntity);
+        // redirect:매핑주소
         return "redirect:/loginForm"; // 로그인페이지 이동해주는 컨트롤러 메서드를 재활용
     }
 
@@ -72,6 +63,11 @@ public class UserController {
         return "user/loginForm";
     }
 
+    // SELECT * FROM user WHERE username=? AND password=?
+    // 원래 SELECT 는 무조건 get요청
+    // 그런데 로그인만 예외 (POST)
+    // 이유 : 주소에 패스워드를 남길 수 없으니까!!
+    // 로그인 - - 로그인X
     @PostMapping("/login")
     public String login(User user) {
 
@@ -111,7 +107,6 @@ public class UserController {
 
         // 3. 핵심로직
         Optional<User> userOp = userRepository.findById(id);
-
         if (userOp.isPresent()) {
             User userEntity = userOp.get();
             model.addAttribute("user", userEntity);
@@ -124,7 +119,7 @@ public class UserController {
     }
 
     // 유저수정 페이지 (동적) - 로그인O
-    @GetMapping("/user/{id}/updateForm")
+    @GetMapping("/user/updateForm")
     public String updateForm() {
         return "user/updateForm";
     }
@@ -138,6 +133,7 @@ public class UserController {
     // 로그아웃 - 로그인O
     @GetMapping("/logout")
     public String logout() {
-        return "메인페이지를 돌려주면 됨"; // PostController 만들고 수정하자.
+        session.invalidate();
+        return "redirect:/loginForm"; // PostController 만들고 수정하자.
     }
 }
