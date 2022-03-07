@@ -6,6 +6,8 @@ server:
       charset: utf-8
 
 spring:
+  mustache:
+    expose-session-attributes: true
   datasource:
       url: jdbc:mariadb://localhost:3306/greendb
       driver-class-name: org.mariadb.jdbc.Driver
@@ -14,7 +16,11 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
     show-sql: true
+    
+  output:
+    ansi:
+      enabled: always
