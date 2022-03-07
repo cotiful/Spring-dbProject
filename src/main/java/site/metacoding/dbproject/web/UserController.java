@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import site.metacoding.dbproject.domain.user.User;
 import site.metacoding.dbproject.domain.user.UserRepository;
@@ -37,11 +38,31 @@ public class UserController {
     // username=ssar&password=1234&email=ssar@nate.com (x-www-form)
     // 회원가입 - 로그인X
     @PostMapping("/join")
-    public String join(User user) {
+    public @ResponseBody String join(User user) {
+
+        // StringBuffer sb = new StringBuffer();
+        // sb.append("<script>");
+        // sb.append("alert('값을 제대로 전달받지 못했습니다.');");
+        // // sb.append("location.href='/joinForm';"); ->똑같이 새로고침 하는거다. history.back을
+        // 사용하자
+        // sb.append("history.back();");
+        // sb.append("</script>");
+
+        // 1.username, password, email null 체크 2.공백체크
+        // 2. try_catch 혹은 if로 오류를 잡는 방법이 있다.
+        if (user.getUsername() == null || user.getPassword() == null || user.getEmail() == null) {
+            // return sb.toString();
+            return "redircet:/joinForm"; // 잘못적으면 새로고치돼서 다 사라지니깐 너무 화가남 뒤로가기를 만들어줘야 함
+        }
+        if (user.getUsername().equals("") || user.getPassword().equals("") || user.getEmail().equals("")) {
+
+            return "redircet:/joinForm";
+        }
         System.out.println("user : " + user);
+
+        // 2. 핵심로직
         User userEntity = userRepository.save(user);
         System.out.println("userEntity : " + userEntity);
-        // redirect:매핑주소
         return "redirect:/loginForm"; // 로그인페이지 이동해주는 컨트롤러 메서드를 재활용
     }
 
@@ -51,11 +72,6 @@ public class UserController {
         return "user/loginForm";
     }
 
-    // SELECT * FROM user WHERE username=? AND password=?
-    // 원래 SELECT 는 무조건 get요청
-    // 그런데 로그인만 예외 (POST)
-    // 이유 : 주소에 패스워드를 남길 수 없으니까!!
-    // 로그인 - - 로그인X
     @PostMapping("/login")
     public String login(User user) {
 
