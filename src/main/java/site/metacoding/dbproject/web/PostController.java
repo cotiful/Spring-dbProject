@@ -1,5 +1,7 @@
 package site.metacoding.dbproject.web;
 
+import javax.servlet.http.HttpSession;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -8,12 +10,26 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 
+import lombok.RequiredArgsConstructor;
+import site.metacoding.dbproject.domain.post.Post;
+import site.metacoding.dbproject.domain.post.PostRepository;
+import site.metacoding.dbproject.domain.user.User;
+
+@RequiredArgsConstructor // final이 붙은 애들에 대한 생성자를 만들어준다.
 @Controller
 public class PostController {
+
+    private final HttpSession session;
+    private final PostRepository postRepository;
 
     // GET 글쓰기 페이지 /post/writeForm - 인증만 필요
     @GetMapping("/s/post/writeForm")
     public String writeForm() {
+
+        if (session.getAttribute("principal") == null) {
+            return "redirect:/loginForm";
+        }
+
         return "post/writeForm";
     }
 
@@ -51,9 +67,21 @@ public class PostController {
         return "redirect:/post/" + id;
     }
 
-    // POST 글쓰기 /post - 글목록으로 가기
+    // POST 글쓰기 /post - 글목록으로 가기 - 인증 O
     @PostMapping("/s/post")
-    public String write() {
+
+    // 오브젝트로 받음, 근데 user 오브젝트가 외래키로 참조되고 있기 떄문에 user 넣어줘야함
+    public String write(Post post) {
+
+        // 인증체크
+        if (session.getAttribute("principal") == null) {
+            return "redirect:/loginForm";
+        }
+        User principal = (User) session.getAttribute("principal");
+        post.setUser(principal);
+        // INSERT INTO post(title, content, userId) values (사용자, 사용자, 세션오브젝트의 PK)
+
+        postRepository.save(post);
         return "redirect:/";
     }
 }
