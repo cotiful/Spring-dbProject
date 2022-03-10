@@ -38,7 +38,10 @@ public class PostController {
     // @GetMapping({"/", "/post/list"})
     // Get 요청만 그냥 통과시키소~ post, delete, update 말고
     @GetMapping({ "/", "/post/list" })
-    public String list() {
+    public String list(Model model) {
+        // 1.postRepository의 findAll() 호출
+        // 2. model에 담기
+        model.addAttribute("posts", postRepository.findAll());
         return "post/list";
     }
 
@@ -72,6 +75,8 @@ public class PostController {
 
     // 오브젝트로 받음, 근데 user 오브젝트가 외래키로 참조되고 있기 떄문에 user 넣어줘야함
     public String write(Post post) {
+
+        // title, content 1.null 검사, 2. 공백검사, 3.길이 검사 등등등
 
         // 인증체크
         if (session.getAttribute("principal") == null) {
