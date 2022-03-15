@@ -4,6 +4,8 @@ import java.util.Optional;
 
 import javax.servlet.http.HttpSession;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,6 +14,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import lombok.RequiredArgsConstructor;
 import site.metacoding.dbproject.domain.post.Post;
@@ -41,10 +45,18 @@ public class PostController {
     // @GetMapping({"/", "/post/list"})
     // Get 요청만 그냥 통과시키소~ post, delete, update 말고
     @GetMapping({ "/", "/post/list" })
-    public String list(Model model) {
+    public String list(@RequestParam(defaultValue = "0") Integer page, Model model) {
         // 1.postRepository의 findAll() 호출
         // 2. model에 담기
-        model.addAttribute("posts", postRepository.findAll(Sort.by(Sort.Direction.DESC, "id")));
+        // post 목록 desc 생성하기 findall sort 통해서 정렬해줌
+        // model.addAttribute("posts",
+        // postRepository.findAll(Sort.by(Sort.Direction.DESC, "id")));
+
+        PageRequest pq = PageRequest.of(page, 3);
+        model.addAttribute("posts", postRepository.findAll(pq));
+        model.addAttribute("prevPage", page - 1);
+        model.addAttribute("nextPage", page + 1);
+
         return "post/list";
     }
 
