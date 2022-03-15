@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import site.metacoding.dbproject.domain.user.User;
 import site.metacoding.dbproject.domain.user.UserRepository;
+import site.metacoding.dbproject.web.dto.ResponseDto;
 
 @Controller
 public class UserController {
@@ -29,6 +30,28 @@ public class UserController {
     public UserController(UserRepository userRepository, HttpSession session) {
         this.userRepository = userRepository;
         this.session = session;
+    }
+
+    // 데이터 통신은 api, api가 붙어있으면 데이터 보내주는 거구나
+    // 아이디 중복 체크 질문, user의 username이 동일한지 확인해줄래? -응답(json) **String으로 주면안됨**
+    // same-check = sameCheck (커멜표기법)
+    // http://localhost:8080/api/user/username/same-check?username=s
+    @GetMapping("/api/user/username/same-check")
+    public @ResponseBody ResponseDto<String> sameCheck(String username) {
+        // 1.SELECT * FROM user WHERE username = "ssar";
+        User userEntity = userRepository.mUsernameSameCheck(username);
+
+        // 2.있으면? 없으면?
+        if (userEntity == null) {
+            return new ResponseDto<String>(1, "통신성공", "없다");
+
+        } else {
+            return new ResponseDto<String>(1, "통신성공", "있다");
+        }
+
+        // 1이면 진행하고, 1이 아니면 진행하지 않는다. 실패했을 때 메세지가 중요
+        // 1이 있으면 사용할 수 없게끔 JavaScript로 fetch해서
+
     }
 
     // 회원가입 페이지 (정적) - 로그인X
