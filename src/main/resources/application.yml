@@ -14,7 +14,8 @@ spring:
       username: green
       password: green1234
 
-  jpa:
+  jpa: 
+    open-in-view: true
     hibernate:
       ddl-auto: update
       naming:
